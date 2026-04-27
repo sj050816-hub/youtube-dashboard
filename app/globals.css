@@ -5,16 +5,17 @@ body {
   margin: 0;
   padding: 0;
   background: #f3f4f6;
-  color: #111827;
+  color: #111827 !important;
 }
 
 * {
   box-sizing: border-box;
+  color: #111827;
 }
 
 button,
 select,
 textarea,
 input {
-  color: inherit;
+  color: #111827 !important;
 }
