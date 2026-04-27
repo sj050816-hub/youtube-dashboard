@@ -4,29 +4,7 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: #f3f4f6 !important;
-  color: #111827 !important;
-  -webkit-text-fill-color: #111827 !important;
-}
-
-div,
-p,
-h1,
-h2,
-h3,
-span,
-label,
-select,
-option,
-textarea,
-input {
-  color: #111827 !important;
-  -webkit-text-fill-color: #111827 !important;
-}
-
-button {
-  color: white !important;
-  -webkit-text-fill-color: white !important;
+  background: #f3f4f6;
 }
 
 * {
