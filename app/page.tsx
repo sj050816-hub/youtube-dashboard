@@ -396,7 +396,6 @@ export default function Home() {
   };
 
   const categoryTrendingChannels = buildChannelRanking(filteredVideos);
-
   const allTrendingChannels =
     filteredVideos.length > 0 ? buildChannelRanking(videos) : [];
 
@@ -414,7 +413,7 @@ export default function Home() {
   const VideoCard = ({ video, highlight = false }: any) => {
     return (
       <div
-        className={`p-4 mb-4 rounded shadow flex gap-4 ${
+        className={`p-4 mb-4 rounded shadow flex gap-4 text-gray-900 ${
           highlight ? "bg-yellow-100" : "bg-white"
         }`}
       >
@@ -424,8 +423,8 @@ export default function Home() {
           className="w-40 h-24 rounded object-cover"
         />
 
-        <div className="flex-1">
-          <p className="font-bold mb-2">{video.title}</p>
+        <div className="flex-1 text-gray-900">
+          <p className="font-bold mb-2 text-gray-900">{video.title}</p>
           <p>채널: {video.channelTitle}</p>
           <p>구독자 수: {video.subscribers.toLocaleString()}</p>
           <p>구독자 증가: {formatGrowth(video.subscriberGrowth)}</p>
@@ -439,7 +438,7 @@ export default function Home() {
           <p>평균 대비: {video.score.toFixed(1)}배</p>
 
           {video.score >= 3 && (
-            <p className="text-red-500 font-bold mt-2">🚀 성공 DNA 영상</p>
+            <p className="text-red-600 font-bold mt-2">🚀 성공 DNA 영상</p>
           )}
         </div>
       </div>
@@ -452,15 +451,17 @@ export default function Home() {
       : `${selectedCategory} 카테고리`;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-10">
-      <div className="flex flex-col items-center mb-8">
-        <h1 className="text-3xl font-bold mb-6">유튜브 트렌딩 분석기</h1>
+    <div className="min-h-screen bg-gray-100 p-10 text-gray-900">
+      <div className="flex flex-col items-center mb-8 text-gray-900">
+        <h1 className="text-3xl font-bold mb-6 text-gray-900">
+          유튜브 트렌딩 분석기
+        </h1>
 
         <textarea
           placeholder={`채널 ID, @핸들, 채널 링크를 한 줄에 하나씩 입력하세요\n예:\nUC_x5XG1OV2P6uZZ5FSM9Ttw\n@GoogleDevelopers`}
           value={channelIds}
           onChange={(e) => setChannelIds(e.target.value)}
-          className="px-4 py-3 border rounded w-96 h-36 mb-4"
+          className="px-4 py-3 border border-gray-400 rounded w-96 h-36 mb-4 bg-white text-gray-900 placeholder-gray-500"
         />
 
         <div className="flex flex-wrap gap-2 justify-center">
@@ -506,24 +507,24 @@ export default function Home() {
         </div>
 
         {savedChannels.length > 0 && (
-          <p className="mt-3 text-sm text-gray-600">
+          <p className="mt-3 text-sm text-gray-700">
             저장된 채널: {savedChannels.length}개
           </p>
         )}
 
         {loadingMessage && (
-          <p className="mt-3 text-sm text-gray-600">{loadingMessage}</p>
+          <p className="mt-3 text-sm text-gray-700">{loadingMessage}</p>
         )}
       </div>
 
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto text-gray-900">
         {videos.length > 0 && (
-          <div className="bg-white p-4 mb-6 rounded shadow">
-            <p className="font-bold">분석 요약</p>
+          <div className="bg-white text-gray-900 p-4 mb-6 rounded shadow">
+            <p className="font-bold text-gray-900">분석 요약</p>
             <p>현재 선택 카테고리: {categoryTitle}</p>
             <p>분석 영상 수: {filteredVideos.length}개</p>
             <p>성공 DNA 영상 수: {successVideos.length}개</p>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-gray-700 mt-1">
               Topic 채널과 구독자 1,000명 미만 채널은 제외됩니다.
             </p>
 
@@ -531,7 +532,7 @@ export default function Home() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="border px-3 py-2 rounded"
+                className="border border-gray-400 px-3 py-2 rounded bg-white text-gray-900"
               >
                 {categories.map((category) => (
                   <option key={category} value={category}>
@@ -543,7 +544,7 @@ export default function Home() {
               <select
                 value={subscriberFilter}
                 onChange={(e) => setSubscriberFilter(e.target.value)}
-                className="border px-3 py-2 rounded"
+                className="border border-gray-400 px-3 py-2 rounded bg-white text-gray-900"
               >
                 <option value="전체">전체 구독자</option>
                 <option value="소형">10만 이하</option>
@@ -554,7 +555,7 @@ export default function Home() {
               <select
                 value={periodFilter}
                 onChange={(e) => setPeriodFilter(e.target.value)}
-                className="border px-3 py-2 rounded"
+                className="border border-gray-400 px-3 py-2 rounded bg-white text-gray-900"
               >
                 <option value="전체">전체 기간</option>
                 <option value="7일">최근 7일</option>
@@ -564,7 +565,7 @@ export default function Home() {
               <select
                 value={languageFilter}
                 onChange={(e) => setLanguageFilter(e.target.value)}
-                className="border px-3 py-2 rounded"
+                className="border border-gray-400 px-3 py-2 rounded bg-white text-gray-900"
               >
                 {languages.map((language) => (
                   <option key={language} value={language}>
@@ -576,7 +577,7 @@ export default function Home() {
               <select
                 value={sortMode}
                 onChange={(e) => setSortMode(e.target.value)}
-                className="border px-3 py-2 rounded"
+                className="border border-gray-400 px-3 py-2 rounded bg-white text-gray-900"
               >
                 <option value="성공점수순">성공점수순</option>
                 <option value="조회수순">조회수순</option>
@@ -587,7 +588,7 @@ export default function Home() {
         )}
 
         {filteredVideos.length === 0 && videos.length > 0 && (
-          <div className="bg-orange-50 p-4 mb-6 rounded shadow text-sm text-gray-700">
+          <div className="bg-orange-50 text-gray-900 p-4 mb-6 rounded shadow text-sm">
             현재 필터 조건에 맞는 영상/채널이 없습니다. 카테고리, 구독자 수,
             기간 필터를 변경해보세요.
           </div>
@@ -595,7 +596,7 @@ export default function Home() {
 
         {trendingKeywords.length > 0 && (
           <>
-            <h2 className="text-xl font-bold mb-4">
+            <h2 className="text-xl font-bold mb-4 text-gray-900">
               🔥 {categoryTitle} 지금 뜨는 키워드 TOP 10
             </h2>
             <div className="flex flex-wrap gap-2 mb-8">
@@ -613,12 +614,15 @@ export default function Home() {
 
         {categoryTrendingChannels.length > 0 && (
           <>
-            <h2 className="text-xl font-bold mb-4">
+            <h2 className="text-xl font-bold mb-4 text-gray-900">
               🚀 {categoryTitle} 뜨는 채널 TOP 5
             </h2>
             {categoryTrendingChannels.map((ch: any, index: number) => (
-              <div key={index} className="bg-blue-100 p-4 mb-3 rounded shadow">
-                <p className="font-bold">
+              <div
+                key={index}
+                className="bg-blue-100 text-gray-900 p-4 mb-3 rounded shadow"
+              >
+                <p className="font-bold text-gray-900">
                   {index + 1}. {ch.channelTitle}
                 </p>
                 <p>구독자: {ch.subscribers.toLocaleString()}</p>
@@ -637,12 +641,15 @@ export default function Home() {
 
         {selectedCategory !== "전체" && allTrendingChannels.length > 0 && (
           <>
-            <h2 className="text-xl font-bold mt-8 mb-4">
+            <h2 className="text-xl font-bold mt-8 mb-4 text-gray-900">
               🌐 전체 카테고리 뜨는 채널 TOP 5
             </h2>
             {allTrendingChannels.map((ch: any, index: number) => (
-              <div key={index} className="bg-gray-100 p-4 mb-3 rounded shadow">
-                <p className="font-bold">
+              <div
+                key={index}
+                className="bg-white text-gray-900 p-4 mb-3 rounded shadow"
+              >
+                <p className="font-bold text-gray-900">
                   {index + 1}. {ch.channelTitle}
                 </p>
                 <p>구독자: {ch.subscribers.toLocaleString()}</p>
@@ -655,12 +662,15 @@ export default function Home() {
 
         {topVideos.length > 0 && (
           <>
-            <h2 className="text-xl font-bold mt-8 mb-4">
+            <h2 className="text-xl font-bold mt-8 mb-4 text-gray-900">
               🏆 {categoryTitle} TOP 5 영상
             </h2>
             {topVideos.map((video, index) => (
-              <div key={index} className="bg-green-100 p-4 mb-3 rounded shadow">
-                <p className="font-bold">
+              <div
+                key={index}
+                className="bg-green-100 text-gray-900 p-4 mb-3 rounded shadow"
+              >
+                <p className="font-bold text-gray-900">
                   {index + 1}. {video.title}
                 </p>
                 <p>채널: {video.channelTitle}</p>
@@ -676,7 +686,7 @@ export default function Home() {
 
         {successVideos.length > 0 && (
           <>
-            <h2 className="text-xl font-bold mt-8 mb-4">
+            <h2 className="text-xl font-bold mt-8 mb-4 text-gray-900">
               🔥 {categoryTitle} 성공 DNA 영상
             </h2>
             {successVideos.map((video, index) => (
@@ -687,7 +697,9 @@ export default function Home() {
 
         {normalVideos.length > 0 && (
           <>
-            <h2 className="text-xl font-bold mt-8 mb-4">일반 영상</h2>
+            <h2 className="text-xl font-bold mt-8 mb-4 text-gray-900">
+              일반 영상
+            </h2>
             {normalVideos.map((video, index) => (
               <VideoCard key={index} video={video} />
             ))}
