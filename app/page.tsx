@@ -12,6 +12,7 @@ export default function Home() {
   const [periodFilter, setPeriodFilter] = useState("전체");
   const [languageFilter, setLanguageFilter] = useState("전체");
   const [sortMode, setSortMode] = useState("성공점수순");
+  const [growthPeriod, setGrowthPeriod] = useState("일간");
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
 
@@ -33,6 +34,18 @@ export default function Home() {
       !title.includes("- Topic") &&
       subscribers >= 1000
     );
+  };
+
+  const getGrowthDays = () => {
+    if (growthPeriod === "일간") return 1;
+    if (growthPeriod === "주간") return 7;
+    if (growthPeriod === "월간") return 30;
+    return 1;
+  };
+
+  const getGrowthSpeed = (value: number | null | undefined) => {
+    if (value === null || value === undefined) return 0;
+    return value / getGrowthDays();
   };
 
   const categorizeWithAI = async (videosToCategorize: any[]) => {
@@ -267,6 +280,9 @@ export default function Home() {
     if (sortMode === "조회수순") return b.views - a.views;
     if (sortMode === "증가량순")
       return (b.viewGrowth ?? -1) - (a.viewGrowth ?? -1);
+    if (sortMode === "급상승순")
+      return getGrowthSpeed(b.viewGrowth) - getGrowthSpeed(a.viewGrowth);
+
     return b.score - a.score;
   });
 
@@ -395,7 +411,63 @@ export default function Home() {
       .slice(0, 5);
   };
 
+  const buildGrowthChannelRanking = (sourceVideos: any[]) => {
+    const cleanVideos = sourceVideos.filter(isRealChannel);
+    const channelMap: any = {};
+
+    cleanVideos.forEach((video) => {
+      if (!channelMap[video.channelId]) {
+        channelMap[video.channelId] = {
+          channelId: video.channelId,
+          channelTitle: video.channelTitle,
+          subscribers: video.subscribers,
+          videoCount: 0,
+          totalViews: 0,
+          totalViewGrowth: 0,
+          totalSubscriberGrowth: 0,
+          growthVideoCount: 0,
+        };
+      }
+
+      const ch = channelMap[video.channelId];
+
+      ch.videoCount += 1;
+      ch.totalViews += video.views;
+
+      if (video.viewGrowth !== null && video.viewGrowth !== undefined) {
+        ch.totalViewGrowth += video.viewGrowth;
+        ch.growthVideoCount += 1;
+      }
+
+      if (
+        video.subscriberGrowth !== null &&
+        video.subscriberGrowth !== undefined
+      ) {
+        ch.totalSubscriberGrowth += video.subscriberGrowth;
+      }
+    });
+
+    return Object.values(channelMap)
+      .map((ch: any) => {
+        const viewGrowthSpeed = getGrowthSpeed(ch.totalViewGrowth);
+        const subscriberGrowthSpeed = getGrowthSpeed(ch.totalSubscriberGrowth);
+        const growthScore = viewGrowthSpeed + subscriberGrowthSpeed * 100;
+
+        return {
+          ...ch,
+          viewGrowthSpeed,
+          subscriberGrowthSpeed,
+          growthScore,
+        };
+      })
+      .filter((ch: any) => ch.growthVideoCount > 0)
+      .sort((a: any, b: any) => b.growthScore - a.growthScore)
+      .slice(0, 5);
+  };
+
   const categoryTrendingChannels = buildChannelRanking(filteredVideos);
+  const growthChannels = buildGrowthChannelRanking(filteredVideos);
+
   const allTrendingChannels =
     filteredVideos.length > 0 ? buildChannelRanking(videos) : [];
 
@@ -404,10 +476,10 @@ export default function Home() {
     return new Date(dateString).toLocaleDateString("ko-KR");
   };
 
-  const formatGrowth = (value: number | null) => {
-    if (value === null) return "비교 데이터 없음";
-    if (value > 0) return `+${value.toLocaleString()}`;
-    return value.toLocaleString();
+  const formatGrowth = (value: number | null | undefined) => {
+    if (value === null || value === undefined) return "비교 데이터 없음";
+    if (value > 0) return `+${Math.round(value).toLocaleString()}`;
+    return Math.round(value).toLocaleString();
   };
 
   const VideoCard = ({ video, highlight = false }: any) => {
@@ -525,7 +597,7 @@ export default function Home() {
             <p>분석 영상 수: {filteredVideos.length}개</p>
             <p>성공 DNA 영상 수: {successVideos.length}개</p>
             <p className="text-sm text-gray-700 mt-1">
-              Topic 채널과 구독자 1,000명 미만 채널은 제외됩니다.
+              급상승 데이터는 이전 분석 기록과 비교해서 계산됩니다.
             </p>
 
             <div className="flex flex-wrap gap-2 mt-3">
@@ -582,15 +654,53 @@ export default function Home() {
                 <option value="성공점수순">성공점수순</option>
                 <option value="조회수순">조회수순</option>
                 <option value="증가량순">조회수 증가량순</option>
+                <option value="급상승순">급상승순</option>
+              </select>
+
+              <select
+                value={growthPeriod}
+                onChange={(e) => setGrowthPeriod(e.target.value)}
+                className="border border-gray-400 px-3 py-2 rounded bg-white text-gray-900"
+              >
+                <option value="일간">일간 상승</option>
+                <option value="주간">주간 상승</option>
+                <option value="월간">월간 상승</option>
               </select>
             </div>
           </div>
         )}
 
-        {filteredVideos.length === 0 && videos.length > 0 && (
+        {growthChannels.length > 0 && (
+          <>
+            <h2 className="text-xl font-bold mb-4 text-gray-900">
+              📈 {growthPeriod} 급상승 채널 TOP 5
+            </h2>
+            {growthChannels.map((ch: any, index: number) => (
+              <div
+                key={index}
+                className="bg-orange-100 text-gray-900 p-4 mb-3 rounded shadow"
+              >
+                <p className="font-bold text-gray-900">
+                  {index + 1}. {ch.channelTitle}
+                </p>
+                <p>구독자: {ch.subscribers.toLocaleString()}</p>
+                <p>분석 영상 수: {ch.videoCount}개</p>
+                <p>조회수 증가 합계: {formatGrowth(ch.totalViewGrowth)}</p>
+                <p>
+                  {growthPeriod} 기준 조회수 증가 속도:{" "}
+                  {formatGrowth(ch.viewGrowthSpeed)}
+                </p>
+                <p>구독자 증가 합계: {formatGrowth(ch.totalSubscriberGrowth)}</p>
+                <p>급상승 점수: {ch.growthScore.toFixed(2)}</p>
+              </div>
+            ))}
+          </>
+        )}
+
+        {growthChannels.length === 0 && videos.length > 0 && (
           <div className="bg-orange-50 text-gray-900 p-4 mb-6 rounded shadow text-sm">
-            현재 필터 조건에 맞는 영상/채널이 없습니다. 카테고리, 구독자 수,
-            기간 필터를 변경해보세요.
+            아직 비교할 이전 분석 기록이 부족합니다. 같은 채널이나 저장된
+            채널을 다시 분석하면 급상승 채널이 계산됩니다.
           </div>
         )}
 
