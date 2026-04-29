@@ -62,8 +62,10 @@ export default function Home() {
         const res = await fetch("/api/categorize", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: video.title }),
-        });
+         body: JSON.stringify({
+  title: video.title,
+  channelTitle: video.channelTitle,
+}),
 
         const data = await res.json();
 
